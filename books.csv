@@ -1,0 +1,6 @@
+ISBN,Title,Author,Publisher,Year,Availability,BookedBy
+LIT001,Advanced Programming,Jane Doe,TechPress,2022,available,
+LIT002,Data Structures,John Smith,CodeBooks,2020,borrowed,STU1
+LIT003,Algorithm Design,Alice Johnson,CompSci,2021,available,
+LIT004,Database Systems,Bob Williams,DataPub,2019,reserved,STU2
+LIT005,Machine Learning,Carol Brown,AIPress,2023,available,
