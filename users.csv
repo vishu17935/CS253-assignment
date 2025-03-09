@@ -1,0 +1,10 @@
+MemberID,FullName,MemberType
+STU1,Student One,student
+STU2,Student Two,student
+STU3,Student Three,student
+STU4,Student Four,student
+STU5,Student Five,student
+PROF1,Professor One,faculty
+PROF2,Professor Two,faculty
+PROF3,Professor Three,faculty
+STAFF1,Librarian One,librarian
