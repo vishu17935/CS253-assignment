@@ -8,8 +8,7 @@
 
 using namespace std;
 
-// Literature class (renamed from Book)
-class Literature {
+class Book {
 private:
     string isbn, name, creator, company;
     string availability, bookedBy;
@@ -17,7 +16,7 @@ private:
 
 public:
     // Constructor with different parameter order
-    Literature(string isbn_val, string name_val, int year_val, string creator_val, string company_val) 
+    Book(string isbn_val, string name_val, int year_val, string creator_val, string company_val) 
         : isbn(isbn_val), name(name_val), publicationYear(year_val), 
           creator(creator_val), company(company_val), availability("available"), bookedBy("") {}
 
@@ -44,7 +43,7 @@ public:
     }
 
     // Static factory method to create object from serialized data
-    static Literature deserialize(const string& data) {
+    static Book deserialize(const string& data) {
         istringstream stream(data);
         string isbn_val, name_val, creator_val, company_val, year_str, status, reserver;
         
@@ -57,20 +56,18 @@ public:
         getline(stream, reserver);
         
         int year_val = stoi(year_str);
-        Literature lit(isbn_val, name_val, year_val, creator_val, company_val);
+        Book lit(isbn_val, name_val, year_val, creator_val, company_val);
         lit.setAvailability(status);
         lit.setBookedBy(reserver);
         return lit;
     }
 };
 
-// BorrowInfo struct (renamed from BorrowRecord)
 struct BorrowInfo {
     string isbn;
     chrono::system_clock::time_point checkoutDate;
 };
 
-// Membership class (renamed from Account)
 class Membership {
 private:
     string memberId;
@@ -145,9 +142,9 @@ public:
 };
 
 // Derived class for faculty
-class Professor : public Member {
+class professor : public Member {
 public:
-    Professor(string id, string name) : Member(id, name, "faculty") {}
+    professor(string id, string name) : Member(id, name, "faculty") {}
     
     bool isEligibleToBorrow() const override {
         if (membership.getCheckedOutItems().size() >= 5) return false;
@@ -175,7 +172,7 @@ public:
 // Library class implementation
 class LibrarySystem {
     private:
-        vector<Literature> catalog;
+        vector<Book> catalog;
         vector<Member*> memberDatabase;
     
     public:
@@ -189,13 +186,13 @@ class LibrarySystem {
         }
     
         // Catalog management methods
-        void addLiterature(const Literature& item) { 
+        void addbook(const Book& item) { 
             catalog.push_back(item); 
         }
         
-        void removeLiterature(const string& isbn) {
+        void removebook(const string& isbn) {
             catalog.erase(remove_if(catalog.begin(), catalog.end(), 
-                         [&isbn](const Literature& lit) { return lit.getISBN() == isbn; }), 
+                         [&isbn](const Book& lit) { return lit.getISBN() == isbn; }), 
                          catalog.end());
         }
     
@@ -214,7 +211,7 @@ class LibrarySystem {
         }
     
         // Search methods
-        Literature* findLiterature(const string& isbn) {
+        Book* findbook(const string& isbn) {
             for (auto& item : catalog) {
                 if (item.getISBN() == isbn) return &item;
             }
@@ -229,8 +226,8 @@ class LibrarySystem {
         }
     
         // Checkout process
-        void checkoutLiterature(Member* member, const string& isbn) {
-            Literature* item = findLiterature(isbn);
+        void checkoutbook(Member* member, const string& isbn) {
+            Book* item = findbook(isbn);
             if (!item) { 
                 cout << "Item not found in catalog.\n"; 
                 return; 
@@ -268,8 +265,8 @@ class LibrarySystem {
         }
     
         // Return process
-        void returnLiterature(Member* member, const string& isbn) {
-            Literature* item = findLiterature(isbn);
+        void returnbook(Member* member, const string& isbn) {
+            Book* item = findbook(isbn);
             if (!item) { 
                 cout << "Item not found in catalog.\n"; 
                 return; 
@@ -305,8 +302,8 @@ class LibrarySystem {
         }
     
         // Reservation process
-        void reserveLiterature(Member* member, const string& isbn) {
-            Literature* item = findLiterature(isbn);
+        void reservebook(Member* member, const string& isbn) {
+            Book* item = findbook(isbn);
             if (!item) { 
                 cout << "Item not found in catalog.\n"; 
                 return; 
@@ -384,18 +381,18 @@ class LibrarySystem {
         // Data persistence methods
         void importData() {
             // Import catalog
-            ifstream catalogFile("literature.csv");
+            ifstream catalogFile("book.csv");
             if (catalogFile.is_open()) {
                 string line;
-                while (getline(catalogFile, line)) catalog.push_back(Literature::deserialize(line));
+                while (getline(catalogFile, line)) catalog.push_back(Book::deserialize(line));
                 catalogFile.close();
             } else {
                 // Default catalog data
-                addLiterature(Literature("LIT001", "Advanced Programming", 2022, "Jane Doe", "TechPress"));
-                addLiterature(Literature("LIT002", "Data Structures", 2020, "John Smith", "CodeBooks"));
-                addLiterature(Literature("LIT003", "Algorithm Design", 2021, "Alice Johnson", "CompSci"));
-                addLiterature(Literature("LIT004", "Database Systems", 2019, "Bob Williams", "DataPub"));
-                addLiterature(Literature("LIT005", "Machine Learning", 2023, "Carol Brown", "AIPress"));
+                addbook(Book("LIT001", "Advanced Programming", 2022, "Jane Doe", "TechPress"));
+                addbook(Book("LIT002", "Data Structures", 2020, "John Smith", "CodeBooks"));
+                addbook(Book("LIT003", "Algorithm Design", 2021, "Alice Johnson", "CompSci"));
+                addbook(Book("LIT004", "Database Systems", 2019, "Bob Williams", "DataPub"));
+                addbook(Book("LIT005", "Machine Learning", 2023, "Carol Brown", "AIPress"));
             }
     
             // Import members
@@ -410,7 +407,7 @@ class LibrarySystem {
                     getline(stream, type);
                     
                     if (type == "student") registerMember(new CollegeStudent(id, name));
-                    else if (type == "faculty") registerMember(new Professor(id, name));
+                    else if (type == "faculty") registerMember(new professor(id, name));
                     else if (type == "librarian") registerMember(new LibraryStaff(id, name));
                 }
                 memberFile.close();
@@ -421,9 +418,9 @@ class LibrarySystem {
                 registerMember(new CollegeStudent("STU3", "Student Three"));
                 registerMember(new CollegeStudent("STU4", "Student Four"));
                 registerMember(new CollegeStudent("STU5", "Student Five"));
-                registerMember(new Professor("PROF1", "Professor One"));
-                registerMember(new Professor("PROF2", "Professor Two"));
-                registerMember(new Professor("PROF3", "Professor Three"));
+                registerMember(new professor("PROF1", "Professor One"));
+                registerMember(new professor("PROF2", "Professor Two"));
+                registerMember(new professor("PROF3", "Professor Three"));
                 registerMember(new LibraryStaff("STAFF1", "Staff One"));
             }
     
@@ -468,7 +465,7 @@ class LibrarySystem {
         // Export data to files
         void exportData() {
             // Export catalog
-            ofstream catalogFile("literature.csv");
+            ofstream catalogFile("book.csv");
             for (const auto& item : catalog) catalogFile << item.serialize() << "\n";
             catalogFile.close();
     
@@ -557,19 +554,19 @@ int main() {
                     case 1: // Check out
                         cout << "Enter ISBN: ";
                         cin >> isbn;
-                        system.checkoutLiterature(activeMember, isbn);
+                        system.checkoutbook(activeMember, isbn);
                         break;
                         
                     case 2: // Return
                         cout << "Enter ISBN: ";
                         cin >> isbn;
-                        system.returnLiterature(activeMember, isbn);
+                        system.returnbook(activeMember, isbn);
                         break;
                         
                     case 3: // View checked out items
                         cout << "\nCurrently checked out items:\n";
                         for (const auto& info : activeMember->getMembership().getCheckedOutItems()) {
-                            Literature* item = system.findLiterature(info.isbn);
+                            Book* item = system.findbook(info.isbn);
                             if (item) {
                                 cout << info.isbn << " - " << item->getName() << "\n";
                             } else {
@@ -595,7 +592,7 @@ int main() {
                     case 6: // Reserve
                         cout << "Enter ISBN: ";
                         cin >> isbn;
-                        system.reserveLiterature(activeMember, isbn);
+                        system.reservebook(activeMember, isbn);
                         break;
                         
                     case 7: // Search
@@ -646,14 +643,14 @@ int main() {
                         cout << "Publication Year: ";
                         cin >> year;
                         
-                        system.addLiterature(Literature(isbn, title, year, author, publisher));
+                        system.addbook(Book(isbn, title, year, author, publisher));
                         cout << "Item added to catalog successfully.\n";
                         break;
                         
                     case 2: // Remove item
                         cout << "Enter ISBN to remove: ";
                         cin >> isbn;
-                        system.removeLiterature(isbn);
+                        system.removebook(isbn);
                         cout << "Item removed from catalog.\n";
                         break;
                         
@@ -667,7 +664,7 @@ int main() {
                         cin >> type;
                         
                         if (type == "student") system.registerMember(new CollegeStudent(id, name));
-                        else if (type == "faculty") system.registerMember(new Professor(id, name));
+                        else if (type == "faculty") system.registerMember(new professor(id, name));
                         else if (type == "librarian") system.registerMember(new LibraryStaff(id, name));
                         else cout << "Invalid member type.\n";
                         
